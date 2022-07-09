@@ -1,0 +1,15 @@
+.table {
+  align-items: center;
+  color: white;
+  display: flex;
+  flex-direction: row;
+  font-family: Courier New , Courier , monospace;
+  justify-content: center;
+  padding: 15px;
+}
+
+.table td, th {
+  border: 3px solid rgb(241, 214, 13);
+  padding: 10px;
+  text-align: center;
+}

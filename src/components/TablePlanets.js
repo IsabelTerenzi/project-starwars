@@ -1,8 +1,10 @@
 import React, { useContext } from 'react';
 import StarWarsContext from '../context/StarwarsContext';
+import '../css/table.css';
 
 function TablePlanets() {
   const { planets } = useContext(StarWarsContext);
+
   return (
     <div className="table">
       <table>

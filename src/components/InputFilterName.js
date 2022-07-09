@@ -1,16 +1,23 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import StarWarsContext from '../context/StarwarsContext';
+import '../css/inputSearch.css';
 
 function InputFilterName() {
+  const { handleChangeName } = useContext(StarWarsContext);
+
   return (
-    <label htmlFor="input-filter">
-      Search:
-      <input
-        data-testid="name-filter"
-        id="input-filter"
-        name="input-filter"
-        type="text"
-      />
-    </label>
+    <div className="input">
+      <label htmlFor="name-filter">
+        Search:
+        <input
+          data-testid="name-filter"
+          id="name-filter"
+          name="name-filter"
+          type="text"
+          onChange={ handleChangeName }
+        />
+      </label>
+    </div>
   );
 }
 

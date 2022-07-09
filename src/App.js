@@ -6,10 +6,13 @@ import TablePlanets from './components/TablePlanets';
 
 function App() {
   return (
-    <PlanetsProvider>
-      <InputFilterName />
-      <TablePlanets />
-    </PlanetsProvider>
+    <div>
+      <h1>Projeto StarWars</h1>
+      <PlanetsProvider>
+        <InputFilterName />
+        <TablePlanets />
+      </PlanetsProvider>
+    </div>
   );
 }
 
