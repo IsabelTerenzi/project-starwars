@@ -3,7 +3,7 @@ import StarWarsContext from '../context/StarwarsContext';
 import '../css/table.css';
 
 function TablePlanets() {
-  const { planets } = useContext(StarWarsContext);
+  const { planetsFiltered } = useContext(StarWarsContext);
 
   return (
     <div className="table">
@@ -26,7 +26,7 @@ function TablePlanets() {
           </tr>
         </thead>
         <tbody>
-          { planets.map((planetInfo, index) => (
+          { planetsFiltered && planetsFiltered.map((planetInfo, index) => (
             <tr key={ index }>
               <td>{planetInfo.name}</td>
               <td>{planetInfo.rotation_period}</td>
