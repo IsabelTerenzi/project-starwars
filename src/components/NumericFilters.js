@@ -11,6 +11,12 @@ function NumericFilters() {
     value: 0,
   });
 
+  const [comlumnOptions, setColumnOptions] = useState([
+    'population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water',
+  ]);
+
+  const [isFiltered, setIsFiltered] = useState(false);
+
   const handleNumericChange = ({ target: { value, name } }) => {
     setNumericInput({
       ...numericInput,
@@ -20,6 +26,10 @@ function NumericFilters() {
 
   const handleClick = () => {
     handleNumericClick(numericInput);
+    setIsFiltered(true);
+    const disableInput = comlumnOptions
+      .filter((option) => option !== numericInput.column);
+    setColumnOptions(disableInput); // filtra as opções da coluna para que não seja possível selecionar novamente a mesma opção para um segundo filtro.
   };
 
   return (
@@ -31,11 +41,9 @@ function NumericFilters() {
           data-testid="column-filter"
           onChange={ handleNumericChange }
         >
-          <option value="population">population</option>
-          <option value="orbital_period">orbital_period</option>
-          <option value="diameter">diameter</option>
-          <option value="rotation_period">rotation_period</option>
-          <option value="surface_water">surface_water</option>
+          { comlumnOptions.map((option, index) => (
+            <option key={ index } value={ option }>{option}</option>
+          ))}
         </select>
       </label>
       <label htmlFor="comparison">
@@ -67,6 +75,14 @@ function NumericFilters() {
       >
         Filtrar
       </button>
+      { isFiltered && (
+        <div className="filter">
+          <p>{ numericInput.column }</p>
+          <p>{ numericInput.comparison }</p>
+          <p>{ numericInput.value }</p>
+          <button type="button">X</button>
+        </div>
+      )}
     </div>
   );
 }

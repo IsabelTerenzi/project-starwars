@@ -37,7 +37,7 @@ function PlanetsProvider({ children }) {
           if (comparison === 'igual a') {
             return Number(planet[column]) === Number(value);
           }
-          return planets;
+          return planetsFiltered;
         });
         setPlanetsFiltered(comparisonFilter);
       });

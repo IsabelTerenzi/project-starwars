@@ -5,3 +5,10 @@
   justify-content: space-evenly;
   padding: 20px;
 }
+
+.filter {
+  color: white;
+  display: flex;
+  flex-direction: row;
+  gap: 25px;
+}
