@@ -3,21 +3,33 @@ import StarWarsContext from '../context/StarwarsContext';
 import '../css/numericFilters.css';
 
 function NumericFilters() {
-  const [inputColumn, setInputColumn] = useState('population');
-  const [inputComparison, setInputComparison] = useState('maior que');
-  const [inputValue, setInputValue] = useState(0);
-
   const { handleNumericClick } = useContext(StarWarsContext);
+
+  const [numericInput, setNumericInput] = useState({
+    column: 'population',
+    comparison: 'maior que',
+    value: 0,
+  });
+
+  const handleNumericChange = ({ target: { value, name } }) => {
+    setNumericInput({
+      ...numericInput,
+      [name]: value,
+    });
+  };
+
+  const handleClick = () => {
+    handleNumericClick(numericInput);
+  };
 
   return (
     <div className="numeric-filters">
-      <label htmlFor="coluna">
+      <label htmlFor="column">
         <select
-          value={ inputColumn }
-          id="coluna"
-          name="coluna"
+          name="column"
+          id="column"
           data-testid="column-filter"
-          onChange={ ({ target }) => setInputColumn(target.value) }
+          onChange={ handleNumericChange }
         >
           <option value="population">population</option>
           <option value="orbital_period">orbital_period</option>
@@ -26,13 +38,12 @@ function NumericFilters() {
           <option value="surface_water">surface_water</option>
         </select>
       </label>
-      <label htmlFor="operador">
+      <label htmlFor="comparison">
         <select
-          value={ inputComparison }
-          id="operador"
-          name="operador"
+          name="comparison"
+          id="comparison"
           data-testid="comparison-filter"
-          onChange={ ({ target }) => setInputComparison(target.value) }
+          onChange={ handleNumericChange }
         >
           <option value="maior que">maior que</option>
           <option value="menor que">menor que</option>
@@ -41,17 +52,17 @@ function NumericFilters() {
       </label>
       <label htmlFor="value">
         <input
-          value={ inputValue }
+          value={ numericInput.value }
           id="value"
           type="number"
           name="value"
-          onChange={ ({ target }) => setInputValue(target.value) }
+          onChange={ handleNumericChange }
           data-testid="value-filter"
         />
       </label>
       <button
         type="button"
-        onClick={ () => handleNumericClick(inputColumn, inputComparison, inputValue) }
+        onClick={ handleClick }
         data-testid="button-filter"
       >
         Filtrar
