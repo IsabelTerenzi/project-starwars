@@ -22,28 +22,6 @@ function PlanetsProvider({ children }) {
     fetchAPI();
   }, []);
 
-  const verifyNumericFilters = (arrayFilters) => {
-    if (arrayFilters.length > 0) {
-      arrayFilters.forEach(({ column, comparison, value }) => {
-        const comparisonFilter = planetsFiltered.filter((planet) => {
-          if (comparison === 'maior que') {
-            return Number(planet[column]) > Number(value);
-          }
-
-          if (comparison === 'menor que') {
-            return Number(planet[column]) < Number(value);
-          }
-
-          if (comparison === 'igual a') {
-            return Number(planet[column]) === Number(value);
-          }
-          return planetsFiltered;
-        });
-        setPlanetsFiltered(comparisonFilter);
-      });
-    }
-  };
-
   const handleChangeName = ({ target: { value } }) => {
     const filterNamePlanet = planets.filter((planet) => planet.name
       .toLowerCase().includes(value));
@@ -55,21 +33,13 @@ function PlanetsProvider({ children }) {
     setPlanetsFiltered(filterNamePlanet);
   };
 
-  const handleNumericClick = (filters) => {
-    const arrayFilters = [...filter.filterByNumericValues, filters];// cria a constante para acumular vários filtros.
-    setFilter({
-      ...filter,
-      filterByNumericValues: arrayFilters,
-    });
-    verifyNumericFilters(arrayFilters);
-  };
-
   const context = {
     planets,
     handleChangeName,
-    handleNumericClick,
     planetsFiltered,
     filter,
+    setFilter,
+    setPlanetsFiltered,
   }; // valores do meu provider, para serem utilizados em todos os componentes criados, com o useContext.
 
   return (

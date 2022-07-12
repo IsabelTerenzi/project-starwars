@@ -3,19 +3,26 @@ import StarWarsContext from '../context/StarwarsContext';
 import '../css/numericFilters.css';
 
 function NumericFilters() {
-  const { handleNumericClick } = useContext(StarWarsContext);
+  const {
+    filter,
+    setFilter,
+    planets,
+    planetsFiltered,
+    setPlanetsFiltered,
+  } = useContext(StarWarsContext);
+  const { filterByNumericValues } = filter;
 
   const [numericInput, setNumericInput] = useState({
     column: 'population',
     comparison: 'maior que',
     value: 0,
-  });
+  }); // valores iniciais dos inputs.
 
   const [comlumnOptions, setColumnOptions] = useState([
     'population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water',
-  ]);
+  ]); // opções iniciais do input de column.
 
-  const [isFiltered, setIsFiltered] = useState(false);
+  const [isFiltered, setIsFiltered] = useState(false); // booleano para renderizar os filtros escolhidos na tela, ao se tornarem true com o click de filtro.
 
   const handleNumericChange = ({ target: { value, name } }) => {
     setNumericInput({
@@ -24,12 +31,75 @@ function NumericFilters() {
     });
   };
 
+  const verifyNumericFilters = (arrayFilters, planets2) => {
+    if (arrayFilters.length > 0) {
+      arrayFilters.forEach(({ column, comparison, value }) => {
+        const comparisonFilter = planets2.filter((planet) => {
+          if (comparison === 'maior que') {
+            return Number(planet[column]) > Number(value);
+          }
+
+          if (comparison === 'menor que') {
+            return Number(planet[column]) < Number(value);
+          }
+
+          if (comparison === 'igual a') {
+            return Number(planet[column]) === Number(value);
+          }
+          return null;
+        });
+        setPlanetsFiltered(comparisonFilter); // faz as comparações dos filtros e retorna ao array dos planetas filtrados.
+      });
+    }
+  };
+
+  const handleNumericClick = (filters) => {
+    const arrayFilters = [...filter.filterByNumericValues, filters];// cria a constante para acumular vários filtros.
+    setFilter({
+      ...filter,
+      filterByNumericValues: arrayFilters,
+    });
+    verifyNumericFilters(arrayFilters, planetsFiltered);
+  };
+
   const handleClick = () => {
     handleNumericClick(numericInput);
     setIsFiltered(true);
-    const disableInput = comlumnOptions
+    const disableOptionColumn = comlumnOptions
       .filter((option) => option !== numericInput.column);
-    setColumnOptions(disableInput); // filtra as opções da coluna para que não seja possível selecionar novamente a mesma opção para um segundo filtro.
+    setColumnOptions(disableOptionColumn); // filtra as opções da coluna para que não seja possível selecionar novamente a mesma opção para um segundo filtro.
+  };
+
+  const removeOneFilter = (option) => {
+    const filtro = filter.filterByNumericValues
+      .filter(({ column }) => column !== option);
+
+    if (!filtro.length) {
+      setPlanetsFiltered(planets);
+      setIsFiltered(false);
+    } else {
+      verifyNumericFilters(filtro, planets);
+    }
+
+    setFilter({
+      ...filter,
+      filterByNumericValues: filtro,
+    }); // removendo o filtro do array de filtros.
+
+    const newColumnOptions = [...comlumnOptions, option]; // readiciona a opção à lista de column para seleção.
+    setColumnOptions(newColumnOptions);
+  }; // retorna a tabela para o formato antes do filtro.
+
+  const removeAll = () => {
+    setFilter({
+      ...filter,
+      filterByNumericValues: [],
+    }); // retorna o array para o valor inicial, ou seja, vazio.
+    setPlanetsFiltered(planets); // coloca as informações vindas da API na tela novamente, já que não há nenhum filtro.
+    setIsFiltered(false);
+    setColumnOptions([
+      'population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water',
+    ]); // coloca as opções todas disponíveis novamente.
   };
 
   return (
@@ -75,14 +145,27 @@ function NumericFilters() {
       >
         Filtrar
       </button>
-      { isFiltered && (
-        <div className="filter">
-          <p>{ numericInput.column }</p>
-          <p>{ numericInput.comparison }</p>
-          <p>{ numericInput.value }</p>
-          <button type="button">X</button>
-        </div>
-      )}
+      { isFiltered && filterByNumericValues
+        .map((filters, index) => ((
+          <div className="filter" data-testid="filter" key={ index }>
+            <p>{ filters.column }</p>
+            <p>{ filters.comparison }</p>
+            <p>{ filters.value }</p>
+            <button
+              type="button"
+              onClick={ () => removeOneFilter(filters.column) }
+            >
+              X
+            </button>
+          </div>
+        )))}
+      <button
+        type="button"
+        data-testid="button-remove-filters"
+        onClick={ removeAll }
+      >
+        Remover Filtros
+      </button>
     </div>
   );
 }
