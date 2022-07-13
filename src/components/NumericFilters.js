@@ -154,18 +154,21 @@ function NumericFilters() {
             <button
               type="button"
               onClick={ () => removeOneFilter(filters.column) }
+              data-testid="remove-filter"
             >
               X
             </button>
           </div>
         )))}
-      <button
-        type="button"
-        data-testid="button-remove-filters"
-        onClick={ removeAll }
-      >
-        Remover Filtros
-      </button>
+      { isFiltered && (
+        <button
+          type="button"
+          data-testid="button-remove-filters"
+          onClick={ removeAll }
+        >
+          Remover Filtros
+        </button>
+      )}
     </div>
   );
 }

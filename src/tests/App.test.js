@@ -90,4 +90,50 @@ describe('Testa a aplicação', () => {
 
     expect(screen.getAllByTestId('name-planet')).toHaveLength(1);
   })
+
+  it('Testa o número de opções de column se um filtro é escolhido e sua remoção', async () => {
+    render(<App />);
+
+    await waitFor(() => expect(global.fetch).toHaveBeenCalled());
+
+    const inputColumn = screen.getByTestId("column-filter");
+    const inputComparison = screen.getByTestId("comparison-filter");
+    const inputValue = screen.getByTestId("value-filter");
+    const buttonFilter = screen.getByTestId("button-filter");
+
+    userEvent.type(inputValue, '200000');
+    userEvent.click(buttonFilter);
+
+    const filter = screen.getByTestId("filter");
+    const removeFilter = screen.getByTestId("remove-filter");
+    const buttonRemoveFilters = screen.getByTestId("button-remove-filters");
+
+    expect(inputColumn).toHaveLength(4);
+    expect(filter).toBeInTheDocument();
+    expect(removeFilter).toBeInTheDocument();
+    expect(buttonRemoveFilters).toBeInTheDocument();
+
+    userEvent.selectOptions(inputColumn, 'surface_water');
+    userEvent.selectOptions(inputComparison, 'menor que');
+    userEvent.clear(inputValue);
+    userEvent.type(inputValue, '13')
+    userEvent.click(buttonFilter);
+
+    expect(inputColumn).toHaveLength(3);
+    expect(screen.getAllByTestId('name-planet')).toHaveLength(3);
+
+    userEvent.click(removeFilter);
+
+    expect(inputColumn).toHaveLength(4);
+    expect(screen.getAllByTestId('name-planet')).toHaveLength(6);
+
+    userEvent.click(buttonRemoveFilters);
+
+    expect(screen.getAllByTestId('name-planet')).toHaveLength(10);
+    expect(inputColumn).toHaveLength(5);
+    expect(filter).not.toBeInTheDocument();
+    expect(removeFilter).not.toBeInTheDocument();
+    expect(buttonRemoveFilters).not.toBeInTheDocument();
+    expect(screen.queryAllByRole('checkbox', { checked: true })).toHaveLength(0);
+  })
 });
