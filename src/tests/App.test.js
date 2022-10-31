@@ -1,8 +1,9 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import fetchResponse from './fetchResponse';
 import App from '../App';
 import userEvent from '@testing-library/user-event';
+
 
 describe('Testa a aplicação', () => {
   beforeEach(async () => {
@@ -11,7 +12,11 @@ describe('Testa a aplicação', () => {
     }));
   })
 
-  afterEach(() => jest.clearAllMocks());
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+  });
+
 
   it('Testa se os elementos são renderizados na tela', () => {
     render(<App />);
@@ -57,6 +62,8 @@ describe('Testa a aplicação', () => {
     userEvent.type(inputSearchByName, 'tato');
 
     expect(screen.getAllByTestId('name-planet')).toHaveLength(1);
+
+    userEvent.clear(inputSearchByName);
   })
 
   it('Testa o funcionamento dos filtros de valor', async () => {
@@ -73,22 +80,25 @@ describe('Testa a aplicação', () => {
     userEvent.click(buttonFilter);
 
     expect(screen.getAllByTestId('name-planet')).toHaveLength(6);
+    expect(screen.getByText(/alderaan/i)).toBeInTheDocument();
 
-    userEvent.selectOptions(inputColumn, 'rotation_period');
-    userEvent.selectOptions(inputComparison, 'menor que');
+    userEvent.selectOptions(inputColumn, ['rotation_period']);
+    userEvent.selectOptions(inputComparison, ['menor que']);
     userEvent.clear(inputValue);
     userEvent.type(inputValue, '26')
     userEvent.click(buttonFilter);
 
     expect(screen.getAllByTestId('name-planet')).toHaveLength(4);
+    expect(screen.getByText(/alderaan/i)).toBeInTheDocument();
 
-    userEvent.selectOptions(inputColumn, 'surface_water');
-    userEvent.selectOptions(inputComparison, 'igual a');
+    userEvent.selectOptions(inputColumn, ['surface_water']);
+    userEvent.selectOptions(inputComparison, ['igual a']);
     userEvent.clear(inputValue);
     userEvent.type(inputValue, '40')
     userEvent.click(buttonFilter);
 
     expect(screen.getAllByTestId('name-planet')).toHaveLength(1);
+    expect(screen.getByText(/alderaan/i)).toBeInTheDocument();
   })
 
   it('Testa o número de opções de column se um filtro é escolhido e sua remoção', async () => {
@@ -112,20 +122,25 @@ describe('Testa a aplicação', () => {
     expect(filter).toBeInTheDocument();
     expect(removeFilter).toBeInTheDocument();
     expect(buttonRemoveFilters).toBeInTheDocument();
+    expect(screen.getByText(/alderaan/i)).toBeInTheDocument();
+    expect(screen.queryByText(/tatooine/i)).toBeNull();
 
-    userEvent.selectOptions(inputColumn, 'surface_water');
-    userEvent.selectOptions(inputComparison, 'menor que');
+    userEvent.selectOptions(inputColumn, ['surface_water']);
+    userEvent.selectOptions(inputComparison, ['menor que']);
     userEvent.clear(inputValue);
     userEvent.type(inputValue, '13')
     userEvent.click(buttonFilter);
 
     expect(inputColumn).toHaveLength(3);
     expect(screen.getAllByTestId('name-planet')).toHaveLength(3);
+    expect(screen.getByText(/endor/i)).toBeInTheDocument();
+    expect(screen.getByText(/surface_water menor que 13/i)).toBeInTheDocument();
 
     userEvent.click(removeFilter);
 
     expect(inputColumn).toHaveLength(4);
     expect(screen.getAllByTestId('name-planet')).toHaveLength(6);
+    expect(screen.getByText(/dagobah/i)).toBeInTheDocument();
 
     userEvent.click(buttonRemoveFilters);
 
@@ -134,6 +149,21 @@ describe('Testa a aplicação', () => {
     expect(filter).not.toBeInTheDocument();
     expect(removeFilter).not.toBeInTheDocument();
     expect(buttonRemoveFilters).not.toBeInTheDocument();
-    expect(screen.queryAllByRole('checkbox', { checked: true })).toHaveLength(0);
+    expect(screen.getByText(/endor/i)).toBeInTheDocument();
+   expect(screen.queryByText(/population maior que 200000/i)).not.toBeInTheDocument();
+  })
+
+  it('Testa se ao filtra uma informação inexistente, o resultado é vazio', async () => {
+    render(<App />);
+
+    await waitFor(() => expect(global.fetch).toHaveBeenCalled());
+
+    const inputValue = screen.getByTestId("value-filter");
+    const buttonFilter = screen.getByTestId("button-filter");
+
+    userEvent.type(inputValue, '10000000000000');
+    userEvent.click(buttonFilter);
+
+    expect(screen.queryAllByTestId('name-planet')).toHaveLength(0);
   })
 });

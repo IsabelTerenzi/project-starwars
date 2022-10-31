@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import StarWarsContext from './StarwarsContext';
 
 function PlanetsProvider({ children }) {
-  const [planets, setPlanets] = useState([]);
+  const [planets, setPlanets] = useState([]); // estado que irá receber o resultado do fetch da API.
   const [filter, setFilter] = useState({
     filterByName: { name: '' },
     filterByNumericValues: [],
   }); // formato exigido pelo requisito.
-  const [planetsFiltered, setPlanetsFiltered] = useState([]); // foi necessário criar mais um array, para não cair em looping.
+  const [planetsFiltered, setPlanetsFiltered] = useState([]); // foi necessário criar mais um array, para não cair em looping e setar esse como o array que irá ser filtrado.
 
   useEffect(() => {
     const fetchAPI = async () => {
@@ -19,8 +19,8 @@ function PlanetsProvider({ children }) {
       setPlanets(filteredResidents);
       setPlanetsFiltered(filteredResidents);
     };
-    fetchAPI();
-  }, []);
+    fetchAPI(); // boa prática criar uma função dentro do useEffect e depois chamá-la, ao invés de fazer o fetch na useEffect.
+  }, []); // a useEffect funciona como a componentDidMount, com o segundo parâmetro vazio.
 
   const handleChangeName = ({ target: { value } }) => {
     const filterNamePlanet = planets.filter((planet) => planet.name
@@ -30,7 +30,7 @@ function PlanetsProvider({ children }) {
       ...filter,
       filterByName: { name: value },
     }); // coloca no objeto do name o valor digitado no input.
-    setPlanetsFiltered(filterNamePlanet);
+    setPlanetsFiltered(filterNamePlanet); // o novo array de planetas será esse filtrado a partir do nome.
   };
 
   const context = {

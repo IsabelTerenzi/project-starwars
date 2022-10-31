@@ -16,11 +16,11 @@ function NumericFilters() {
     column: 'population',
     comparison: 'maior que',
     value: 0,
-  }); // valores iniciais dos inputs.
+  }); // valores iniciais dos inputs, que irão entrar no array de filterByNumericValues.
 
   const [comlumnOptions, setColumnOptions] = useState([
     'population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water',
-  ]); // opções iniciais do input de column.
+  ]); // opções iniciais do input de column, pois a opção escolhida é removida a cada filtro.
 
   const [isFiltered, setIsFiltered] = useState(false); // booleano para renderizar os filtros escolhidos na tela, ao se tornarem true com o click de filtro.
 
@@ -63,7 +63,7 @@ function NumericFilters() {
   };
 
   const handleClick = () => {
-    handleNumericClick(numericInput);
+    handleNumericClick(numericInput); // com o numericInput no parâmetro, eu junto os meus inputs com o filterByNumericValues.
     setIsFiltered(true);
     const disableOptionColumn = comlumnOptions
       .filter((option) => option !== numericInput.column);
@@ -140,6 +140,7 @@ function NumericFilters() {
       </label>
       <button
         type="button"
+        id="button-filter"
         onClick={ handleClick }
         data-testid="button-filter"
       >
@@ -148,9 +149,7 @@ function NumericFilters() {
       { isFiltered && filterByNumericValues
         .map((filters, index) => ((
           <div className="filter" data-testid="filter" key={ index }>
-            <p>{ filters.column }</p>
-            <p>{ filters.comparison }</p>
-            <p>{ filters.value }</p>
+            <p>{ `${filters.column} ${filters.comparison} ${filters.value}`}</p>
             <button
               type="button"
               onClick={ () => removeOneFilter(filters.column) }
